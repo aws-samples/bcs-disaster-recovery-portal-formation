@@ -1,0 +1,28 @@
+schemaVersion: "2.2"
+description: Install CloudEndure agent on the host
+parameters:
+  Token:
+    type: String
+    description: Installation token provided by CloudEndure
+    minChars: 64
+  Url:
+    type: String
+    description: The download url of the installation file
+    default: https://console.cloudendure.com/installer_linux.py
+
+mainSteps:
+  - action: aws:runShellScript
+    name: DownloadAgentInstaller
+    inputs:
+      workingDirectory: /tmp
+      timeoutSeconds: 300
+      runCommand:
+        - sudo wget --output-document=/tmp/agent_installer.py {{Url}}
+
+  - action: aws:runShellScript
+    name: InstallCloudEndureAgent
+    inputs:
+      workingDirectory: /tmp
+      timeoutSeconds: 300
+      runCommand:
+        - sudo python /tmp/agent_installer.py --token={{Token}} --no-prompt
